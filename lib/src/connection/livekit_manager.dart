@@ -133,6 +133,8 @@ class LiveKitManager {
       try {
         switch (audioRouteMode) {
           case AudioRouteMode.auto:
+            final hasBluetooth = await _hasBluetoothAudioDevice();
+            await Hardware.instance.setSpeakerphoneOn(!hasBluetooth);
             break;
           case AudioRouteMode.speaker:
             await Hardware.instance.setSpeakerphoneOn(true);
@@ -163,6 +165,20 @@ class LiveKitManager {
       _dataStreamController.addError(Exception('LiveKit Connection Error: $e'));
       rethrow;
     }
+  }
+
+  Future<bool> _hasBluetoothAudioDevice() async {
+    final devices = await Hardware.instance.enumerateDevices();
+    return devices.any((device) {
+      if (device.kind != 'audioinput' && device.kind != 'audiooutput') {
+        return false;
+      }
+      final label = device.label.toLowerCase();
+      return label.contains('bluetooth') ||
+          label.contains('airpods') ||
+          label.contains('buds') ||
+          label.contains('headset');
+    });
   }
 
   /// Sends a data message to the room
