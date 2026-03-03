@@ -1,9 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:livekit_client/livekit_client.dart';
+import '../models/audio_route_mode.dart';
 
 /// Manages LiveKit Room connection and audio tracks
 class LiveKitManager {
+  LiveKitManager({this.audioRouteMode = AudioRouteMode.auto});
+
+  final AudioRouteMode audioRouteMode;
   Room? _room;
   EventsListener<RoomEvent>? _eventsListener;
   Timer? _speakingDebounceTimer;
@@ -125,12 +129,21 @@ class LiveKitManager {
       // Connect to LiveKit server
       await _room!.connect(serverUrl, token);
 
-      // Enable speakerphone on Android
+      // Configure output routing on mobile.
       try {
-        await Hardware.instance.setSpeakerphoneOn(true);
+        switch (audioRouteMode) {
+          case AudioRouteMode.auto:
+            break;
+          case AudioRouteMode.speaker:
+            await Hardware.instance.setSpeakerphoneOn(true);
+            break;
+          case AudioRouteMode.bluetoothPreferred:
+            await Hardware.instance.setSpeakerphoneOn(false);
+            break;
+        }
       } catch (e) {
         _dataStreamController.addError(
-          Exception('Could not enable speakerphone: $e'),
+          Exception('Could not configure audio route: $e'),
         );
       }
 

@@ -4,6 +4,7 @@ import 'package:livekit_client/livekit_client.dart' as livekit;
 import '../models/conversation_status.dart';
 import '../models/conversation_config.dart';
 import '../models/callbacks.dart';
+import '../models/audio_route_mode.dart';
 import '../tools/client_tools.dart';
 import '../connection/livekit_manager.dart';
 import '../connection/token_service.dart';
@@ -24,6 +25,7 @@ class ConversationClient extends ChangeNotifier {
   final String? _websocketUrl;
   final ConversationCallbacks? _callbacks;
   final Map<String, ClientTool>? _clientTools;
+  final AudioRouteMode _audioRouteMode;
 
   // State
   ConversationStatus _status = ConversationStatus.disconnected;
@@ -60,16 +62,18 @@ class ConversationClient extends ChangeNotifier {
     String? websocketUrl,
     ConversationCallbacks? callbacks,
     Map<String, ClientTool>? clientTools,
+    AudioRouteMode audioRouteMode = AudioRouteMode.auto,
   })  : _apiEndpoint = apiEndpoint,
         _websocketUrl = websocketUrl,
         _callbacks = callbacks,
-        _clientTools = clientTools {
+        _clientTools = clientTools,
+        _audioRouteMode = audioRouteMode {
     _initializeServices();
   }
 
   void _initializeServices() {
     _tokenService = TokenService(apiEndpoint: _apiEndpoint);
-    _liveKitManager = LiveKitManager();
+    _liveKitManager = LiveKitManager(audioRouteMode: _audioRouteMode);
     _messageHandler = MessageHandler(
       callbacks: _enhancedCallbacks,
       liveKit: _liveKitManager,

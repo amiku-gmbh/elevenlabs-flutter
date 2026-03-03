@@ -12,6 +12,7 @@ export 'src/models/conversation_status.dart';
 export 'src/models/conversation_config.dart';
 export 'src/models/callbacks.dart';
 export 'src/models/events.dart';
+export 'src/models/audio_route_mode.dart';
 
 // Tools
 export 'src/tools/client_tools.dart';
