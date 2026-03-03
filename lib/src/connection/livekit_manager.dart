@@ -174,10 +174,9 @@ class LiveKitManager {
         return false;
       }
       final label = device.label.toLowerCase();
-      return label.contains('bluetooth') ||
-          label.contains('airpods') ||
-          label.contains('buds') ||
-          label.contains('headset');
+      // Keep this strict to avoid matching built-in earpiece/headset labels.
+      // A broad match can incorrectly disable loudspeaker and cause low volume.
+      return label.contains('bluetooth') || label.contains('airpods');
     });
   }
 
