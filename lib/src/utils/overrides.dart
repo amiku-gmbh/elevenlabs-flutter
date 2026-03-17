@@ -11,7 +11,7 @@ Map<String, dynamic> constructOverrides(ConversationConfig config) {
       'prompt': overrides?.agent?.prompt,
     },
     'conversation': {'text_only': overrides?.conversation?.textOnly},
-    'tts': {'voice_id': overrides?.tts?.voiceId},
+    'tts': overrides?.tts?.toJson() ?? <String, dynamic>{},
   };
 
   final overridesEvent = <String, dynamic>{
@@ -24,7 +24,6 @@ Map<String, dynamic> constructOverrides(ConversationConfig config) {
     'type': 'conversation_initiation_client_data',
   };
 
-  // Add optional fields
   if (config.userId != null) {
     overridesEvent['user_id'] = config.userId;
   }
